@@ -15,6 +15,7 @@ Dave has always been one of my most favorite characters. I started the project w
 
 Your 360KB floppy has the following files on it:
 
+```
 dave2.exe
 level01.dd2
 level02.dd2
@@ -34,6 +35,8 @@ s_master.dd2
 title1.dd2
 title2.dd2
 progpic.dd2
+```
+
 I don’t know about you, but I was immediately curious, who the hell is Frank?
 
 The game executable is dave2.exe, game logic is not spanned over other files (neither code nor script.) Hexediting the files, I noticed that most files start with a nice HUFF signature. The level%02d, egatiles.dd2 and intro.dd2 are the only files that seem uncompressed. Furthermore, they are the smallest files on disk.
@@ -104,16 +107,20 @@ Like most platform games, Dangerous Dave uses tiles to save memory and keep foot
 egatiles.dd2
 Levels descriptors are these small files named level%02d.dd2, there are 8 such files, hence only 8 levels. Each file is compressed using RLEW, which is an rle compression that works on 16 bits words.
 
+```
 0000000030: 4A 00 FE FE 27 00 33 00 ? 4A 00 FE FE 04 00 33 00
+```
 
 Quite simple, when hitting a 0xfefe magic, the next word is the count, followed by the value. Replace these 3 words with value x count and you’re done.
 Here are the first 0×50 uncompressed bytes from the first level:
 
+```
 0000000000: 20 39 00 00 40 00 39 00 ? 02 00 00 00 00 00 50 00
 0000000010: 2a 00 80 1c 80 03 80 36 ? 80 60 81 40 83 80 86 0c
 0000000020: 80 04 84 60 33 00 33 00 ? 33 00 33 00 33 00 33 00
 0000000030: 33 00 33 00 33 00 33 00 ? 33 00 33 00 33 00 33 00
 0000000040: 33 00 33 00 33 00 33 00 ? 33 00 33 00 33 00 33 00
+```
 
 Bytes 0×00 - 0×03: Size of unpacked file (must not be 0xfefe:))
 
@@ -123,6 +130,7 @@ Bytes 0×06 - 0×7: Level height in tiles (16 pixels)
 
 The rest of the level is split into two parts, the visual (rasterable) section, and magic locations (for monsters, start and exit, power-ups and doors.) The two sections are exactly width*height*16bit each. In the visual section, each such 16 bit word represents an index into the linear tile map. Here are some magic numbers from the second section, these values were retrieved via trial and error. I can’t say I spent a lot of time on this, but the idea should be clear:
 
+```
 Tag 0×0001: Zombie
 Tag 0×0002: Old lady with a knife
 Tag 0×00ff: Player initial location (entry point)
@@ -131,23 +139,21 @@ Tag 0×0013: 1UP
 Tag 0×0633: Teleport 1
 Tag 0×0a06: Teleport 2
 Tag 0×8001: 100 points inside a closet
+```
 
 The level-to-png.py script rasterizes a level previously unpacked with unpack-level.py. Here is the first level; you may notice that some of tiles are never seen on screen. There’s also a modified copy, which was made using my level editor.
 
 level01.dd2
-level01.dd2 (hi-res)
+!(Dangerous Dave level 1)[images/level01.png]
 
-
-
-## 
-Part 6: Wait, something is missing
+## Part 6: Wait, something is missing
 Something was clearly missing! I have been digging the files again, how could I have missed it?? It just wasn’t there!
 
 Whenever Dave died, he did it in style: at the center of the screen appeared a very small animation, showing Dave slashed, slimed, beat, chopped or killed in some form or another. Each such animation sequence is 5 frames long, with a delay of ~500ms between them. The reason why I couldn’t find these graphics easily, was because they have no data file of their own. Data has been embedded inside the executable, for an obvious reason: the .exe file is actually compressed with PKLITE (LZ91 signature). This compression is much stronger than the Huffman compression used for backgrounds, and since these graphics are required for each and every level, I guess it makes sense that they were placed inside the executable.
 
 I call this one “the-death-of-dave”:
+![Deaths of Dave](images/deaths-of-dave.png)
 
-Embedded animations
 
 
 
