@@ -59,15 +59,19 @@ Coders who have done some EGA work know exactly what pain it is to work with the
 The decompression code is available for download, and is called decompress.c (well, d’uh).
 
 ![](dissect/starpic.png)
+
 starpic.dd2 - displayed as a background for Gamers Edge logo
 
 ![](dissect/progpic.png)
+
 progpic.dd2 - displays player status during load
 
 ![Title Screen 1](dissect/title1.png)
+
 title1.dd2
 
 ![Title Screen 2](dissect/title2.png)
+
 title2.dd2
 
 ## Part 4: Sprites
