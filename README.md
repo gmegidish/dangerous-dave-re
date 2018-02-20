@@ -109,7 +109,10 @@ s_master.dd2
 
 Like most platform games, Dangerous Dave uses tiles to save memory and keep footprint small. All levels share the same tile map, which is stored uncompressed in a file called egatiles.dd2. Tiles are stored sequentially, but independent from each other. 16 x 16 pixels, tiles are 4bit and written down in interleaved EGA representation. There is no header in this file, and tiles are not tagged or indexed in any way. In the dump below, you can see that there are 13 tiles across, yielding a width of 208 pixels; it’s a magic number I just guessed, as it brings out something nicely viewable. Grab a quick look at the tiles, and you will see that several tiles are marked with the text ‘free’, others are just empty boxes, and some are even unused in the game.
 
+![](dissect/egatiles.png)
+
 egatiles.dd2
+
 Levels descriptors are these small files named level%02d.dd2, there are 8 such files, hence only 8 levels. Each file is compressed using RLEW, which is an rle compression that works on 16 bits words.
 
 ```
