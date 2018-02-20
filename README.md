@@ -53,7 +53,7 @@ Within less than an hour I have rewritten the deflation code, got rid of all the
 
 Coders who have done some EGA work know exactly what pain it is to work with these bit planes. Looking back at this, it is very good I started with the full screen bitmaps; it is much easier to try and figure out what’s going on a big bitmap, rather on a 16×16 sprite. With my swiss-knife uber-library PIL (*Python Imaging Library*), I hacked up a small script that converts these 32008 files into PNGs.
 
-The decompression code is available for download, and is called decompress.c (well, d’uh).
+The decompression code is available for download, and is called `decompress.c` (well, d’uh).
 
 ![](dissect/starpic.png)
 
@@ -72,15 +72,16 @@ title1.dd2
 title2.dd2
 
 ## Part 4: Sprites
-Now, the sprites were a real bitch to extract. After unpacking these .dd2 files, I wrote a simple script that converts these outputs into something visible. I couldn’t make much out of what was appearing on my monitor. Thought, I did notice something interesting: other than the garbage that was now occupying most of my screen, the upper-left 24×32 pixels were actually making sense!
+
+Now, the sprites were a real bitch to extract. After unpacking these .dd2 files, I wrote a simple script that converts these outputs into something visible. I couldn’t make much out of what was appearing on my monitor. Though, I did notice something interesting: other than the garbage that was now occupying most of my screen, the upper-left 24×32 pixels were actually making sense!
 
 They were somewhat making a distorted image of Dave. The colors were wrong also, but that means that my initial assumption of EGA bit plane offsets were wrong. I dug through the disassembled code again, and noticed that the first 2 bytes of the deflated sprite files were used in the function that I previously named ‘put_ega_tile‘. Went back to my script, and tried using that magic number as the distance between bit planes.
 
-Voila! It worked! Now I manage to see a clear image of Dave, spanning over 16 sprites. It is truly a great feeling, having nothing for a while and all of a sudden seeing something being properly displayed. The next sprites were garbled; I could see that they were of the right colors, and the pixels made some sense in small blocks, but the overall view was complete crap. Then it hit me — These sprites are not of the same dimensions; I multiplied the bytes-per-bitplane by 4 (2^4 = 16 colors,) and it was exactly the same as the deflated file. This could only mean one thing: the sprite dimensions are not stored in the sprite files; they are in the executable.
+*Voila!* It worked! Now I see a clear image of Dave, spanning over 16 sprites. It is truly a great feeling, having nothing for a while and all of a sudden seeing something being properly displayed. The next sprites were garbled; I could see that they were of the right colors, and the pixels made some sense in small blocks, but the overall view was complete crap. Then it hit me — These sprites are not of the same dimensions; I multiplied the bytes-per-bitplane by 4 (2^4 = 16 colors,) and it was exactly the same as the deflated file. This could only mean one thing: the sprite dimensions are not stored in the sprite files; *they are in the executable.*
 
-I recalled seeing some funny strings in the executable, like “DAVESTANDE“, I looked it up again and found that Seg005 was full of these; 10 bytes strings, followed by several 16 bit shorts. Since I knew the first sprite was of Dave in a standing (idle) position, I figured that the next shorts were width (divided by 8px), and height (in pixels.) A few more shorts followed, but they were of no interest to me. My guess is that they stand for hotspot position, file offset or stuff like that. So, I decided that it would just be simpler to find the sprite dimensions by simple trial and error. I just guessed the dimensions: if I were correct, I saw the right sprite; if not, I just saw garbled pile of tiles. I know it might seem strange and stupid, but really, it took 5 minutes to get the rest of the sprites out :)
+I recalled seeing some funny strings in the executable, like `DAVESTANDE`, I looked it up again and found that seg005 was full of these; 10 bytes strings, followed by several 16 bit shorts. Since I knew the first sprite was of Dave in a standing (idle) position, I figured that the next shorts were width (divided by 8px), and height (in pixels.) A few more shorts followed, but they were of no interest to me. My guess is that they stand for hotspot position, file offset or stuff like that. So, I decided that it would just be simpler to find the sprite dimensions by simple trial and error. I just guessed the dimensions: if I were correct, I saw the right sprite; if not, I just saw garbled pile of tiles. I know it might seem strange and stupid, but really, it took 5 minutes to get the rest of the sprites out :)
 
-view-sprites.py creates a png for each sprite descriptor file; it blits all sprites horizontally next to each other. You can click on the thumbnails below and get a full 1:1 dump.
+`view-sprites.py` creates a png for each sprite descriptor file; it blits all sprites horizontally next to each other. You can click on the thumbnails below and get a full 1:1 dump.
 
 ![](dissect/s_dave.png)
 
@@ -104,7 +105,7 @@ s_master.dd2
 
 ## Part 5: Levels
 
-Like most platform games, Dangerous Dave uses tiles to save memory and keep footprint small. All levels share the same tile map, which is stored uncompressed in a file called egatiles.dd2. Tiles are stored sequentially, but independent from each other. 16 x 16 pixels, tiles are 4bit and written down in interleaved EGA representation. There is no header in this file, and tiles are not tagged or indexed in any way. In the dump below, you can see that there are 13 tiles across, yielding a width of 208 pixels; it’s a magic number I just guessed, as it brings out something nicely viewable. Grab a quick look at the tiles, and you will see that several tiles are marked with the text ‘free’, others are just empty boxes, and some are even unused in the game.
+Like most platform games, Dangerous Dave uses tiles to save memory and keep footprint small. All levels share the same tile map, which is stored uncompressed in a file called `egatiles.dd2`. Tiles are stored sequentially, but independent from each other. 16 x 16 pixels, tiles are 4bit and written down in interleaved EGA representation. There is no header in this file, and tiles are not tagged or indexed in any way. In the dump below, you can see that there are 13 tiles across, yielding a width of 208 pixels; it’s a magic number I just guessed, as it brings out something nicely viewable. Grab a quick look at the tiles, and you will see that several tiles are marked with the text `free`, others are just empty boxes, and some are even unused in the game.
 
 ![](dissect/egatiles.png)
 
@@ -113,18 +114,19 @@ egatiles.dd2
 Levels descriptors are these small files named level%02d.dd2, there are 8 such files, hence only 8 levels. Each file is compressed using RLEW, which is an rle compression that works on 16 bits words.
 
 ```
-0000000030: 4A 00 FE FE 27 00 33 00 ? 4A 00 FE FE 04 00 33 00
+0000000030: 4A 00 FE FE 27 00 33 00 | 4A 00 FE FE 04 00 33 00
 ```
 
 Quite simple, when hitting a 0xfefe magic, the next word is the count, followed by the value. Replace these 3 words with value x count and you’re done.
+
 Here are the first 0×50 uncompressed bytes from the first level:
 
 ```
-0000000000: 20 39 00 00 40 00 39 00 ? 02 00 00 00 00 00 50 00
-0000000010: 2a 00 80 1c 80 03 80 36 ? 80 60 81 40 83 80 86 0c
-0000000020: 80 04 84 60 33 00 33 00 ? 33 00 33 00 33 00 33 00
-0000000030: 33 00 33 00 33 00 33 00 ? 33 00 33 00 33 00 33 00
-0000000040: 33 00 33 00 33 00 33 00 ? 33 00 33 00 33 00 33 00
+0000000000: 20 39 00 00 40 00 39 00 | 02 00 00 00 00 00 50 00
+0000000010: 2a 00 80 1c 80 03 80 36 | 80 60 81 40 83 80 86 0c
+0000000020: 80 04 84 60 33 00 33 00 | 33 00 33 00 33 00 33 00
+0000000030: 33 00 33 00 33 00 33 00 | 33 00 33 00 33 00 33 00
+0000000040: 33 00 33 00 33 00 33 00 | 33 00 33 00 33 00 33 00
 ```
 
 Bytes 0×00 - 0×03: Size of unpacked file (must not be 0xfefe:))
@@ -146,33 +148,29 @@ Tag 0×0a06: Teleport 2
 Tag 0×8001: 100 points inside a closet
 ```
 
-The level-to-png.py script rasterizes a level previously unpacked with unpack-level.py. Here is the first level; you may notice that some of tiles are never seen on screen. There’s also a modified copy, which was made using my level editor.
+The `level-to-png.py` script rasterizes a level previously unpacked with `unpack-level.py`. Here is the first level; you may notice that some of tiles are never seen on screen. There’s also a modified copy, which was made using my level editor.
 
 level01.dd2
+
 !(Dangerous Dave level 1)[images/level01.png]
 
 ## Part 6: Wait, something is missing
+
 Something was clearly missing! I have been digging the files again, how could I have missed it?? It just wasn’t there!
 
-Whenever Dave died, he did it in style: at the center of the screen appeared a very small animation, showing Dave slashed, slimed, beat, chopped or killed in some form or another. Each such animation sequence is 5 frames long, with a delay of ~500ms between them. The reason why I couldn’t find these graphics easily, was because they have no data file of their own. Data has been embedded inside the executable, for an obvious reason: the .exe file is actually compressed with PKLITE (LZ91 signature). This compression is much stronger than the Huffman compression used for backgrounds, and since these graphics are required for each and every level, I guess it makes sense that they were placed inside the executable.
+Whenever Dave died, he did it in style: at the center of the screen appeared a very small animation, showing Dave slashed, slimed, beat, chopped or killed in some form or another. Each such animation sequence is 5 frames long, with a delay of ~500ms between them. The reason why I couldn’t find these graphics easily, was because they have no data file of their own. 
+
+Data has been embedded inside the executable, for this reason: the .exe file is actually compressed with PKLITE (LZ91 variant). This compression is much stronger than the Huffman compression used for backgrounds, and since these graphics are required for each and every level, I guess it makes sense that they were placed inside the executable.
 
 I call this one “the-death-of-dave”:
 
 ![Deaths of Dave](images/deaths-of-dave.png)
 
+## Part 7: Links
 
+As I mentioned earlier, I am passionate about making a new Dave episode. There are actually 7 other Dangerous Dave games, but they get less attention.
 
-
-
-
-## Part 7: What’s next for Dave?
-As I mentioned earlier, I am passionate about making a new Dave episode. There are actually 7 other Dangerous Dave games, but nobody speaks of them.
-
-I am talking about a game that is featuring Dave’s cold personality, with Metal Slug-like levels and Castlevania-like bosses, and of course Paul Robertson’s mighty Pirate Baby’s Cabana Battle Street Fighter 2006-like body count and blood-sprinklers.
-
-I have some ideas brewing up for some time now. I am looking for people with strong passion for making games. If you are a graphics artist, either backgrounds or pixelart, make sure you contact me :)
-
-This is it. I hope you enjoyed reading this article. Writing the first of a series is always the most difficult, so please make sure you point out what you liked and what you didn’t like in these pages; that way I can learn from mistakes and make better articles.
+**This is it.** I hope you enjoyed reading this article. Writing the first of a series is always the most difficult, so please make sure you point out what you liked and what you didn’t like in these pages; that way I can learn from mistakes and make better articles.
 
 These are the programs used and mentioned throughout the article:
 
@@ -186,6 +184,8 @@ These are the programs used and mentioned throughout the article:
 - [ega_palette.py](src/ega_palette.py) - EGA palette, required by most scripts
 
 I even did some code for a level editor. I have no idea why, but I worked on it. As I said before, this game has put a magic spell on me. Anyway, click on the screen shot for a full size view.
+
+
 
 
 Cheers!
