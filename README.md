@@ -58,20 +58,17 @@ Coders who have done some EGA work know exactly what pain it is to work with the
 
 The decompression code is available for download, and is called decompress.c (well, d’uh).
 
-```
-starpic.dd2
+![](dissect/starpic.png)
 starpic.dd2 - displayed as a background for Gamers Edge logo
-progpic.dd2
-progpic.dd2- displays player status during load
 
+![](dissect/progpic.png)
+progpic.dd2 - displays player status during load
+
+![Title Screen 1](dissect/title1.png)
 title1.dd2
-title1.dd2
 
+![Title Screen 2](dissect/title2.png)
 title2.dd2
-
-title2.dd2
-```
-
 
 ## Part 4: Sprites
 Now, the sprites were a real bitch to extract. After unpacking these .dd2 files, I wrote a simple script that converts these outputs into something visible. I couldn’t make much out of what was appearing on my monitor. Thought, I did notice something interesting: other than the garbage that was now occupying most of my screen, the upper-left 24×32 pixels were actually making sense!
@@ -152,6 +149,7 @@ Something was clearly missing! I have been digging the files again, how could I 
 Whenever Dave died, he did it in style: at the center of the screen appeared a very small animation, showing Dave slashed, slimed, beat, chopped or killed in some form or another. Each such animation sequence is 5 frames long, with a delay of ~500ms between them. The reason why I couldn’t find these graphics easily, was because they have no data file of their own. Data has been embedded inside the executable, for an obvious reason: the .exe file is actually compressed with PKLITE (LZ91 signature). This compression is much stronger than the Huffman compression used for backgrounds, and since these graphics are required for each and every level, I guess it makes sense that they were placed inside the executable.
 
 I call this one “the-death-of-dave”:
+
 ![Deaths of Dave](images/deaths-of-dave.png)
 
 
@@ -178,7 +176,6 @@ pic2png.py - converts a “PIC“ file to a png (depends on decompress.c)
 view-death-sequences.py - converts embedded animations to png
 view-sprites.py - converts sprites in seperate pngs (depends on decompress.c)
 ega_palette.py - EGA palette, required by most scripts
-Code is released under the GNU Public License (GPL). If you make any changes, please make them publicly available. I would also appreciate an email.
 
 I even did some code for a level editor. I have no idea why, but I worked on it. As I said before, this game has put a magic spell on me. Anyway, click on the screen shot for a full size view.
 
