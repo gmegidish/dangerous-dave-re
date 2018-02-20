@@ -1,3 +1,5 @@
+![](dissect/title1.png)![](dissect/title2.png)
+
 ## Part 1: Introduction
 
 Programmed by the two Johns at *id software*, Dangerous Dave in The Haunted Mansion was released for IBM PC in 1991. If you have never played dave2, you may think that this is yet another platformer in the favor of Command Keen; well, if you have played it, you know it’s closer to the Doom frenchise. Master designer, Tom Hall worked on this game for Softdisk’s *Gamer’s Edge* disk right after leaving Softdisk and founding *id*. With Adrian Carmack on the graphics, the game featured so much gore (for pixelated graphics, of course) that some of it had to be removed.
