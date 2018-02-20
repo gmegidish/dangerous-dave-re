@@ -85,21 +85,25 @@ I recalled seeing some funny strings in the executable, like “DAVESTANDE“, I
 
 view-sprites.py creates a png for each sprite descriptor file; it blits all sprites horizontally next to each other. You can click on the thumbnails below and get a full 1:1 dump.
 
+![](dissect/s_dave.png)
 
 s_dave.dd2
 
-```
-s_dave.dd2
+![](dissect/s_chunk1.png)
+
 s_chunk1.dd2
-s_chunk1.dd2
+
+![](dissect/s_chunk2.png)
+
 s_chunk2.dd2
-s_chunk2.dd2
-s_frank.dd2
+
+![](dissect/s_frank.png)
+
 s_frank.dd2 (<– this is Frank!)
-s_master.dd2
-s_master.dd2
-```
 
+![](dissect/s_master.png)
+
+s_master.dd2
 
 ## Part 5: Levels
 
