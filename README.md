@@ -179,14 +179,14 @@ This is it. I hope you enjoyed reading this article. Writing the first of a seri
 
 These are the programs used and mentioned throughout the article:
 
-[decompress.c](src/decompress.c) - deflates “HUFF” files
-[unpack-level.py](src/unpack-level.py) - unpacks RLEW used in level%02d
-[level-to-png.py](src/level-to-png.py) - renders a level (depends on unpack-level.py)
-[show-tiles.py](src/show-tiles.py) - converts EGATILES.DD2 file to png
-[pic2png.py](src/pic2png.py) - converts a “PIC“ file to a png (depends on decompress.c)
-[view-death-sequences.py](src/view-death-sequences.py) - converts embedded animations to png
-[view-sprites.py](src/view-sprites.py) - converts sprites in seperate pngs (depends on decompress.c)
-[ega_palette.py](src/ega_palette.py) - EGA palette, required by most scripts
+- [decompress.c](src/decompress.c) - deflates “HUFF” files
+- [unpack-level.py](src/unpack-level.py) - unpacks RLEW used in level%02d
+- [level-to-png.py](src/level-to-png.py) - renders a level (depends on unpack-level.py)
+- [show-tiles.py](src/show-tiles.py) - converts EGATILES.DD2 file to png
+- [pic2png.py](src/pic2png.py) - converts a “PIC“ file to a png (depends on decompress.c)
+- [view-death-sequences.py](src/view-death-sequences.py) - converts embedded animations to png
+- [view-sprites.py](src/view-sprites.py) - converts sprites in seperate pngs (depends on decompress.c)
+- [ega_palette.py](src/ega_palette.py) - EGA palette, required by most scripts
 
 I even did some code for a level editor. I have no idea why, but I worked on it. As I said before, this game has put a magic spell on me. Anyway, click on the screen shot for a full size view.
 
