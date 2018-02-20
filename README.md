@@ -1,14 +1,14 @@
 ## Part 1: Introduction
 
-Programmed by the two Johns at id software, Dangerous Dave in The Haunted Mansion was released for IBM PC in 1991. If you have never played dave2, you may think that this is yet another platformer in the favor of Command Keen; well, if you have played it, you know it’s closer to the Doom frenchise. Master Tom Hall designed this game for Softdisk’s Gamer’s Edge disk right after leaving Softdisk and founding id. With Adrian Carmack on the graphics, the game featured so much gore (for pixelated graphics, of course) that some of it had to be removed.
+Programmed by the two Johns at *id software*, Dangerous Dave in The Haunted Mansion was released for IBM PC in 1991. If you have never played dave2, you may think that this is yet another platformer in the favor of Command Keen; well, if you have played it, you know it’s closer to the Doom frenchise. Master designer, Tom Hall worked on this game for Softdisk’s *Gamer’s Edge* disk right after leaving Softdisk and founding *id*. With Adrian Carmack on the graphics, the game featured so much gore (for pixelated graphics, of course) that some of it had to be removed.
 
-It’s true that the year 1991 has seen games with better graphics than dave2. Heck, it’s the year that Another World and Monkey Island 2 were released. Nevertheless, id had to cramp their game to fit in a 360k floppy, and run on 286/386 computers with EGA displays. The platform game engine that runs dd2 was used to make Shadow Knights just before that, so I figure that whatever is said here also applies there.
+It’s true that the year 1991 has seen games with better graphics than dave2. Heck, it’s the year that Another World and Monkey Island 2 were released. Nevertheless, *id* had to cramp their game to fit in a 360k floppy, and run on 286/386 computers with EGA displays. The same game engine that runs *dave2* was used to make *Shadow Knights* just before that, so I figure that whatever is said here also applies there.
 
-I strongly recommend the Planet Romero’s [https://web.archive.org/web/20080404232301/http://rome.ro/article_saga_dave.htm](The Saga of Dangerous Dave) article, and the awesome book Masters of Doom.
+I strongly recommend the Planet Romero’s [The Saga of Dangerous Dave](http://rome.ro/article_saga_dave.htm) article, and the awesome book **Masters of Doom**.
 
 On with my story:
 
-Dave has always been one of my most favorite characters. I started the project when I woke up one day with a vision for a new episode of Dangerous Dave. With that idea in mind, I thought that it would be nice to start with the sprites of the original dave2, since I can’t do any pixelart (can anybody here do pixelart?). Before long, I was sucked into it, and ended up reverse-engineering the entire game. I have split the article into several subpages and I wish you a pleasant reading.
+Dave has always been one of my most favorite characters. I started the project when I woke up one day with a vision for a new episode of Dangerous Dave. With that idea in mind, I thought that it would be nice to start with the sprites of the original dave2, since I can’t do any pixelart. Before long, I was sucked into it, and ended up reverse-engineering the entire game. I have split the article into several sections and I wish you a pleasant reading.
 
 
 ## Part 2: Files and compression
@@ -30,31 +30,28 @@ egatiles.dd2
 s_chunk1.dd2
 s_chunk2.dd2
 s_dave.dd2
-s_frank.dd2 <—–
+s_frank.dd2 <—– who is frank?
 s_master.dd2
 title1.dd2
 title2.dd2
 progpic.dd2
 ```
 
-I don’t know about you, but I was immediately curious, who the hell is Frank?
+The game executable is dave2.exe, game logic is not spanned over other files (neither code nor script.) Hexediting the files, I noticed that most files start with a nice `HUFF` signature. The level%02d, egatiles.dd2 and intro.dd2 are the only files on disk that are not compressed with HUFF. Furthermore, they are the smallest files on disk.
 
-The game executable is dave2.exe, game logic is not spanned over other files (neither code nor script.) Hexediting the files, I noticed that most files start with a nice HUFF signature. The level%02d, egatiles.dd2 and intro.dd2 are the only files that seem uncompressed. Furthermore, they are the smallest files on disk.
-
-So, the first step was figuring out what is this HUFF mambo jambo. Firing up my favorite disassembler, I got down to work. Locating the code that checks for that magic signature was quite simple. I copy-pasted the assembly code onto a clean .c file, and started working out some sense in those nasty loops. Soon enough, I had this neat 90 lines Huffman decompressor and it unpacked all HUFF .dd2 files flawlessly. I was amazed to find out such a simple compression saved ~50%, which is the difference between a game on two floppies and on one. Sweet.
+So, the first step was figuring out what is this HUFF mambo-jambo. Firing up my favorite disassembler, I got down to work. Locating the code that checks for that magic signature was quite simple. I copy-pasted the assembly code onto a clean .c file, and started working out some sense in those nasty loops. Soon enough, I had this neat 90 lines Huffman decompressor and it unpacked all HUFF .dd2 files flawlessly. I was amazed to find out such a simple compression saved ~50%, which is the difference between a game on two floppies and on one.
 
 But let’s take this one step at a time…
 
-
 ## Part 3: Title screens
 
-Here are the background bitmaps (or title screens,) taken from dave2 floppy. All of these images were compressed using some flavor of Huffman. Decompression code starts at seg000:7936h, and was quite clean to follow. Figuring that this is the actually unhuff code was quite easy: each compressed file has a nice “HUFF” signature, I looked up the string and from there I just checked cross-reference. There was only one location that had anything to do with the signature string, and that very same function also prints out “Tried to expand a file that isn’t HUFF!” when it fails. So, as they say, X marks the spot.
+Here are the background bitmaps (or title screens,) taken from *dave2* floppy. All of these images were compressed using some flavor of Huffman Compression. Decompression code starts at `seg000:7936h`, and was quite clean to follow. Figuring that this is the actually unhuff code was quite easy: each compressed file has a nice `HUFF` signature, I looked up the string and from there I just checked cross-reference. There was only one location that had anything to do with the signature string, and that very same function also prints out `Tried to expand a file that isn’t HUFF!` when it fails. As they say, X marks the spot.
 
-Rewriting deflate algorithms is always tricky. Even if you know how it is supposed to work, you can never be sure the original coders haven’t tweaked it for one reason or another. When I get to a decompression code, I just copy-paste the assembly code into a clean C file. `Hello, my name is Gil, and I’m a goto user`. The initial code that was written and actually ran, looked completely horrible. The variable names were named after the registers; arrays were just prefixed ‘dummy’. I consider rewriting obscure code a game on its own. You start with something that works okay, but looks bad, and your goal is to make it look good and readable, without breaking what already works.
+Rewriting deflate algorithms is always tricky. Even if you know how it is supposed to work, you can never be sure the original coders haven’t tweaked it for one reason or another. When I get to a decompression code, I just copy-paste the assembly code into a clean C file. The initial code that was written and actually ran, looked completely horrible. The variable names were named after the registers; arrays were just prefixed ‘dummy’. I consider rewriting obscure code a game on its own. You start with something that works but looks bad, and your goal is to make it look good and readable, without breaking what already works.
 
-Within less than an hour I have rewritten the deflation code, got rid of all the assembly leftovers, and as a Good Samaritan, I even commented my code. After unpacking these full screen bitmaps, I noticed a new file format. It begins with “PIC\0“, followed by a short valued 320, and another that is 200. The other 32000 bytes are 320×200 pixels layered as 4 bitplanes (gotta love EGA!)
+Within less than an hour I have rewritten the deflation code, got rid of all the assembly leftovers, and as a Good Samaritan, I even commented my code. After unpacking these full screen bitmaps, I noticed a new file format. It begins with `PIC\0`, followed by a short valued `320`, and another that is `200`. The other 32000 bytes are 320×200 pixels layered as 4 bitplanes (**gotta love EGA!**)
 
-Coders who have done some EGA work know exactly what pain it is to work with these bit planes. Looking back at this, it is very good I started with the full screen bitmaps; it is much easier to try and figure out what’s going on a big bitmap, rather on a 16×16 sprite. With my swiss-knife uber-library PIL (Python Imaging Library), I hacked up a small script that converts these 32008 files into PNGs.
+Coders who have done some EGA work know exactly what pain it is to work with these bit planes. Looking back at this, it is very good I started with the full screen bitmaps; it is much easier to try and figure out what’s going on a big bitmap, rather on a 16×16 sprite. With my swiss-knife uber-library PIL (*Python Imaging Library*), I hacked up a small script that converts these 32008 files into PNGs.
 
 The decompression code is available for download, and is called decompress.c (well, d’uh).
 
