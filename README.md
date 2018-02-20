@@ -1,4 +1,5 @@
-Part 1: Introduction
+## Part 1: Introduction
+
 Programmed by the two Johns at id software, Dangerous Dave in The Haunted Mansion was released for IBM PC in 1991. If you have never played dave2, you may think that this is yet another platformer in the favor of Command Keen; well, if you have played it, you know it’s closer to the Doom frenchise. Master Tom Hall designed this game for Softdisk’s Gamer’s Edge disk right after leaving Softdisk and founding id. With Adrian Carmack on the graphics, the game featured so much gore (for pixelated graphics, of course) that some of it had to be removed.
 
 It’s true that the year 1991 has seen games with better graphics than dave2. Heck, it’s the year that Another World and Monkey Island 2 were released. Nevertheless, id had to cramp their game to fit in a 360k floppy, and run on 286/386 computers with EGA displays. The platform game engine that runs dd2 was used to make Shadow Knights just before that, so I figure that whatever is said here also applies there.
@@ -10,7 +11,8 @@ On with my story:
 Dave has always been one of my most favorite characters. I started the project when I woke up one day with a vision for a new episode of Dangerous Dave. With that idea in mind, I thought that it would be nice to start with the sprites of the original dave2, since I can’t do any pixelart (can anybody here do pixelart?). Before long, I was sucked into it, and ended up reverse-engineering the entire game. I have split the article into several subpages and I wish you a pleasant reading.
 
 
-Part 2: Files and compression
+## Part 2: Files and compression
+
 Your 360KB floppy has the following files on it:
 
 dave2.exe
@@ -41,8 +43,8 @@ So, the first step was figuring out what is this HUFF mambo jambo. Firing up my 
 But let’s take this one step at a time…
 
 
+## Part 3: Title screens
 
-Part 3: Title screens
 Here are the background bitmaps (or title screens,) taken from dave2 floppy. All of these images were compressed using some flavor of Huffman. Decompression code starts at seg000:7936h, and was quite clean to follow. Figuring that this is the actually unhuff code was quite easy: each compressed file has a nice “HUFF” signature, I looked up the string and from there I just checked cross-reference. There was only one location that had anything to do with the signature string, and that very same function also prints out “Tried to expand a file that isn’t HUFF!” when it fails. So, as they say, X marks the spot.
 
 Rewriting deflate algorithms is always tricky. Even if you know how it is supposed to work, you can never be sure the original coders haven’t tweaked it for one reason or another. When I get to a decompression code, I just copy-paste the assembly code into a clean C file. `Hello, my name is Gil, and I’m a goto user`. The initial code that was written and actually ran, looked completely horrible. The variable names were named after the registers; arrays were just prefixed ‘dummy’. I consider rewriting obscure code a game on its own. You start with something that works okay, but looks bad, and your goal is to make it look good and readable, without breaking what already works.
@@ -53,6 +55,7 @@ Coders who have done some EGA work know exactly what pain it is to work with the
 
 The decompression code is available for download, and is called decompress.c (well, d’uh).
 
+```
 starpic.dd2
 starpic.dd2 - displayed as a background for Gamers Edge logo
 progpic.dd2
@@ -64,12 +67,10 @@ title1.dd2
 title2.dd2
 
 title2.dd2
-
-Continue..
-
+```
 
 
-Part 4: Sprites
+## Part 4: Sprites
 Now, the sprites were a real bitch to extract. After unpacking these .dd2 files, I wrote a simple script that converts these outputs into something visible. I couldn’t make much out of what was appearing on my monitor. Thought, I did notice something interesting: other than the garbage that was now occupying most of my screen, the upper-left 24×32 pixels were actually making sense!
 
 They were somewhat making a distorted image of Dave. The colors were wrong also, but that means that my initial assumption of EGA bit plane offsets were wrong. I dug through the disassembled code again, and noticed that the first 2 bytes of the deflated sprite files were used in the function that I previously named ‘put_ega_tile‘. Went back to my script, and tried using that magic number as the distance between bit planes.
@@ -80,8 +81,10 @@ I recalled seeing some funny strings in the executable, like “DAVESTANDE“, I
 
 view-sprites.py creates a png for each sprite descriptor file; it blits all sprites horizontally next to each other. You can click on the thumbnails below and get a full 1:1 dump.
 
+
 s_dave.dd2
 
+```
 s_dave.dd2
 s_chunk1.dd2
 s_chunk1.dd2
@@ -91,10 +94,11 @@ s_frank.dd2
 s_frank.dd2 (<– this is Frank!)
 s_master.dd2
 s_master.dd2
+```
 
 
+## Part 5: Levels
 
-Part 5: Levels
 Like most platform games, Dangerous Dave uses tiles to save memory and keep footprint small. All levels share the same tile map, which is stored uncompressed in a file called egatiles.dd2. Tiles are stored sequentially, but independent from each other. 16 x 16 pixels, tiles are 4bit and written down in interleaved EGA representation. There is no header in this file, and tiles are not tagged or indexed in any way. In the dump below, you can see that there are 13 tiles across, yielding a width of 208 pixels; it’s a magic number I just guessed, as it brings out something nicely viewable. Grab a quick look at the tiles, and you will see that several tiles are marked with the text ‘free’, others are just empty boxes, and some are even unused in the game.
 
 egatiles.dd2
@@ -135,6 +139,7 @@ level01.dd2 (hi-res)
 
 
 
+## 
 Part 6: Wait, something is missing
 Something was clearly missing! I have been digging the files again, how could I have missed it?? It just wasn’t there!
 
@@ -143,22 +148,12 @@ Whenever Dave died, he did it in style: at the center of the screen appeared a v
 I call this one “the-death-of-dave”:
 
 Embedded animations
-Continue..
-
-Part 6: Wait, something is missing
-Something was clearly missing! I have been digging the files again, how could I have missed it?? It just wasn’t there!
-
-Whenever Dave died, he did it in style: at the center of the screen appeared a very small animation, showing Dave slashed, slimed, beat, chopped or killed in some form or another. Each such animation sequence is 5 frames long, with a delay of ~500ms between them. The reason why I couldn’t find these graphics easily, was because they have no data file of their own. Data has been embedded inside the executable, for an obvious reason: the .exe file is actually compressed with PKLITE (LZ91 signature). This compression is much stronger than the Huffman compression used for backgrounds, and since these graphics are required for each and every level, I guess it makes sense that they were placed inside the executable.
-
-I call this one “the-death-of-dave”:
-
-Embedded animations
-Continue..
 
 
 
 
-Part 7: What’s next for Dave?
+
+## Part 7: What’s next for Dave?
 As I mentioned earlier, I am passionate about making a new Dave episode. There are actually 7 other Dangerous Dave games, but nobody speaks of them.
 
 I am talking about a game that is featuring Dave’s cold personality, with Metal Slug-like levels and Castlevania-like bosses, and of course Paul Robertson’s mighty Pirate Baby’s Cabana Battle Street Fighter 2006-like body count and blood-sprinklers.
