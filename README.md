@@ -183,10 +183,12 @@ These are the programs used and mentioned throughout the article:
 - [view-sprites.py](src/view-sprites.py) - converts sprites in seperate pngs (depends on decompress.c)
 - [ega_palette.py](src/ega_palette.py) - EGA palette, required by most scripts
 
-I even did some code for a level editor. I have no idea why, but I worked on it. As I said before, this game has put a magic spell on me. Anyway, click on the screen shot for a full size view.
+I even did some code for a level editor. I have no idea why, but I worked on it. As I said before, this game has put a spell on me. Anyway, click on the screen shot for a full size view.
 
+![Dangerous Dave level editor](https://farm1.staticflickr.com/50/148617410_52ef6df23d.jpg)
 
-
+You can find the source code for the level editor here:
+https://github.com/gmegidish/dangerous-dave-re/tree/master/level-editor
 
 Cheers!
 – gawd, 2006
