@@ -154,7 +154,7 @@ The `level-to-png.py` script rasterizes a level previously unpacked with `unpack
 
 level01.dd2
 
-!(Dangerous Dave level 1)[images/level01.png]
+![Dangerous Dave level 1](images/level01.png)
 
 ## Part 6: Wait, something is missing
 
